@@ -1,0 +1,63 @@
+:root{--bg:#f7f7fb;--card:#fff;--accent:#2563eb}
+
+.root{ }
+:root{--bg:#ffffff;--panel:#f8fafc;--muted:#f1f5f9;--muted-text:#6b7280;--accent:#2563eb;--text:#0f172a}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;background:var(--bg);margin:0;padding:0;color:var(--text);-webkit-font-smoothing:antialiased}
+.app{width:100%;max-width:none;margin:0;padding:12px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 8px;border-bottom:1px solid #eef2ff}
+.grid{display:grid;grid-template-columns:320px 1fr 560px;gap:12px;align-items:start}
+.card{background:transparent;padding:0;border-radius:0;box-shadow:none;overflow:visible}
+.parts-list .part button{display:block;width:100%;margin:6px 0;padding:8px;border-radius:6px;border:0;background:transparent;text-align:left}
+.contract-list{list-style:none;margin:0;padding:0;background:var(--panel);border-radius:4px;overflow:hidden}
+.contract-list li{cursor:pointer;padding:12px 14px;border-bottom:1px solid rgba(2,6,23,0.04);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.contract-list li:hover{background:rgba(37,99,235,0.03)}
+.contract-list li.selected{background:rgba(37,99,235,0.06);border-left:4px solid var(--accent);padding-left:10px}
+.contract-title{font-weight:600}
+.editor-sections{min-height:160px}
+.app{min-height:100vh;display:flex;flex-direction:column}
+.grid{height:calc(100vh - 72px)}
+.left-col{display:flex;flex-direction:column;gap:12px;height:100%;overflow:auto;padding-right:8px}
+.left-col .card{flex:0 0 auto}
+.right-col{display:flex;flex-direction:column;height:100%;padding-left:8px}
+.right-col .card{flex:1 1 auto;background:#fff;padding:18px;border-left:1px solid #eef2ff;box-shadow:0 10px 30px rgba(2,6,23,0.04);border-radius:8px}
+
+.right-col h3{margin:0 0 8px 0;font-size:15px}
+.right-col h2{font-size:18px;margin:0 0 10px}
+.right-col h4{font-size:15px;margin:8px 0}
+.preview-scroll{overflow:auto;padding:16px}
+.right-col .small{color:#64748b}
+
+/* Fullscreen adjustments */
+.app.is-fullscreen{max-width:100%;margin:0;padding:12px;height:100vh}
+.app.is-fullscreen .grid{height:calc(100vh - 80px)}
+.app.is-fullscreen .card{border-radius:6px}
+.card{display:flex;flex-direction:column}
+.card > .editor-sections{flex:1;overflow:visible}
+
+.popover{position:absolute;z-index:9999}
+.editor-main{display:flex;flex-direction:column;height:100%}
+.editor-main.highlight{box-shadow:0 8px 30px rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.12);transition:box-shadow .25s ease, border .25s ease}
+.preview-scroll{overflow:auto;padding:12px}
+.section{border:0;padding:12px 14px;margin:0;border-bottom:1px solid rgba(2,6,23,0.04);background:transparent}
+.section strong{display:block;margin:0 0 6px}
+.controls{display:flex;gap:8px;margin-top:8px}
+.primary{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;box-shadow:0 6px 18px rgba(37,99,235,0.08)}
+.muted{background:transparent;color:var(--muted-text);border:1px solid rgba(2,6,23,0.04);padding:8px;border-radius:6px;cursor:pointer}
+input, textarea{font-family:inherit;border:1px solid #e6eefc;padding:8px;border-radius:8px}
+textarea{resize:vertical}
+.small{font-size:13px;color:#475569}
+.parts-list .part{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:6px;border:0;border-bottom:1px solid rgba(2,6,23,0.04);background:var(--panel)}
+.parts-list .part:hover{background:rgba(2,6,23,0.02)}
+
+.btn-icon{display:inline-flex;align-items:center;justify-content:center;padding:6px;border-radius:8px;border:1px solid transparent;transition:all .18s ease}
+.btn-icon svg{opacity:0.9}
+.btn-icon:hover{background:#f8fafc;transform:translateY(-1px);box-shadow:0 6px 14px rgba(2,6,23,0.04)}
+.muted[disabled], .btn-icon[disabled]{opacity:0.45;cursor:not-allowed}
+
+/* print styles for app (not the print-preview window) */
+@media print{
+	body *{visibility:hidden}
+	.card, .card *{visibility:visible}
+	.card{position:absolute;left:0;top:0;width:100%}
+}
+

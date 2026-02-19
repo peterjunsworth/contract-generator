@@ -1,0 +1,120 @@
+{
+  "parts": [
+    {
+      "title": "General Liability",
+      "content": "",
+      "id": "1771528144207"
+    },
+    {
+      "id": "non-compete",
+      "title": "Non-Compete Clause",
+      "content": "During the term, the Employee shall not..."
+    },
+    {
+      "id": "non-solicit",
+      "title": "Non-Solicitation Clause",
+      "content": "The Parties agree not to solicit..."
+    },
+    {
+      "id": "indemnity",
+      "title": "Indemnification",
+      "content": "Each party shall indemnify and hold harmless..."
+    }
+  ],
+  "contracts": [
+    {
+      "id": "1771528299825",
+      "title": "GVSA_Rules",
+      "parts": [
+        {
+          "id": "17715282998250.3749427457426139",
+          "type": "custom",
+          "title": "Terms and Conditions",
+          "content": "This section contains the main terms and conditions of the agreement.",
+          "subsections": [],
+          "style": "numbered",
+          "subStyle": "numbered"
+        },
+        {
+          "id": "17715282998250.043674513329438946",
+          "type": "custom",
+          "title": "Payment Terms",
+          "content": "Details regarding payment schedules, methods, and terms.",
+          "subsections": [],
+          "style": "numbered",
+          "subStyle": "numbered"
+        },
+        {
+          "id": "17715282998250.32396998617099637",
+          "type": "custom",
+          "title": "Termination",
+          "content": "Conditions under which this agreement may be terminated.",
+          "subsections": [],
+          "style": "numbered",
+          "subStyle": "numbered"
+        },
+        {
+          "id": "17715282998250.9309926813222913",
+          "type": "custom",
+          "title": "Miscellaneous",
+          "content": "Additional provisions and general clauses.",
+          "subsections": [],
+          "style": "numbered",
+          "subStyle": "numbered"
+        }
+      ]
+    },
+    {
+      "id": "1771528229070",
+      "title": "I forgot to save :)",
+      "parts": [
+        {
+          "id": "19499e10-d33f-4b12-8215-0313d82e9f0f",
+          "type": "custom",
+          "title": "this is new",
+          "content": "ok",
+          "subsections": [],
+          "style": "bulleted",
+          "subStyle": "numbered"
+        },
+        {
+          "id": "1771528270487",
+          "type": "non-compete",
+          "title": "Non-Compete Clause",
+          "content": "[AI Generated] This is sample content for \"Non-Compete Clause\". In a real implementation, this would call an AI API to generate relevant content based on the section title and context.",
+          "style": "letters"
+        }
+      ]
+    },
+    {
+      "id": "sample-1",
+      "title": "Sample Consulting Agreement",
+      "parts": [
+        {
+          "id": "p1",
+          "type": "non-compete",
+          "title": "Non-Compete Clause",
+          "content": "During the term, the Employee shall not..."
+        },
+        {
+          "id": "p2",
+          "type": "indemnity",
+          "title": "Indemnification",
+          "content": "Each party shall indemnify and hold harmless..."
+        },
+        {
+          "id": "1771521760268",
+          "type": "non-compete",
+          "title": "Non-Compete Clause",
+          "content": "During the term, the Employee shall not..."
+        },
+        {
+          "id": "1771528144210",
+          "type": "1771528144207",
+          "title": "General Liability",
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
