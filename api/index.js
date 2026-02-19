@@ -20,78 +20,87 @@ module.exports = async (req, res) => {
   }
 
   const { url, method } = req
-  const pathname = url.replace(/^\/api/, '')
+  // Parse the URL - handle both /api and direct paths
+  let pathname = url
+  if (pathname.startsWith('/api')) {
+    pathname = pathname.replace(/^\/api/, '')
+  }
+
+  // Remove query string if present
+  pathname = pathname.split('?')[0]
+
+  console.log('API Request:', method, pathname)
 
   try {
-    // GET /api/parts
+    // GET /api/parts or /parts
     if (method === 'GET' && pathname === '/parts') {
-      return res.json(db.parts || [])
+      return res.status(200).json(db.parts || [])
     }
 
-    // POST /api/parts
+    // POST /api/parts or /parts
     if (method === 'POST' && pathname === '/parts') {
       const p = req.body
       if (!p.id) p.id = Date.now().toString()
       db.parts = db.parts || []
       db.parts.unshift(p)
-      return res.json(p)
+      return res.status(200).json(p)
     }
 
-    // DELETE /api/parts/:id
+    // DELETE /api/parts/:id or /parts/:id
     if (method === 'DELETE' && pathname.startsWith('/parts/')) {
       const id = pathname.split('/')[2]
       db.parts = (db.parts || []).filter(p => p.id !== id)
-      return res.json({ ok: true })
+      return res.status(200).json({ ok: true })
     }
 
-    // GET /api/contracts
+    // GET /api/contracts or /contracts
     if (method === 'GET' && pathname === '/contracts') {
-      return res.json(db.contracts || [])
+      return res.status(200).json(db.contracts || [])
     }
 
-    // POST /api/contracts
+    // POST /api/contracts or /contracts
     if (method === 'POST' && pathname === '/contracts') {
       const c = req.body
       db.contracts = db.contracts || []
       db.contracts.unshift(c)
-      return res.json(c)
+      return res.status(200).json(c)
     }
 
-    // PUT /api/contracts/:id
+    // PUT /api/contracts/:id or /contracts/:id
     if (method === 'PUT' && pathname.startsWith('/contracts/') && !pathname.includes('/parts')) {
       const id = pathname.split('/')[2]
       db.contracts = db.contracts || []
       db.contracts = db.contracts.map(c => c.id === id ? req.body : c)
-      return res.json(req.body)
+      return res.status(200).json(req.body)
     }
 
-    // DELETE /api/contracts/:id
+    // DELETE /api/contracts/:id or /contracts/:id
     if (method === 'DELETE' && pathname.startsWith('/contracts/')) {
       const id = pathname.split('/')[2]
       db.contracts = (db.contracts || []).filter(c => c.id !== id)
-      return res.json({ ok: true })
+      return res.status(200).json({ ok: true })
     }
 
-    // POST /api/contracts/:id/parts
+    // POST /api/contracts/:id/parts or /contracts/:id/parts
     if (method === 'POST' && pathname.match(/\/contracts\/[^/]+\/parts$/)) {
       const id = pathname.split('/')[2]
       const { part } = req.body
       db.contracts = db.contracts || []
       db.contracts = db.contracts.map(c => c.id === id ? { ...c, parts: [...(c.parts || []), part] } : c)
-      return res.json({ ok: true })
+      return res.status(200).json({ ok: true })
     }
 
-    // POST /api/ai/generate
+    // POST /api/ai/generate or /ai/generate
     if (method === 'POST' && pathname === '/ai/generate') {
       const { title, purpose } = req.body || {}
       await new Promise(r => setTimeout(r, 700))
-      return res.json({
+      return res.status(200).json({
         title: title || 'AI Generated Section',
         content: `Generated section for ${title || purpose || 'agreement'}:\n\nThis is a mock AI-generated draft. Please review and edit.`
       })
     }
 
-    // POST /api/ai/compose
+    // POST /api/ai/compose or /ai/compose
     if (method === 'POST' && pathname === '/ai/compose') {
       const { parts } = req.body || {}
       await new Promise(r => setTimeout(r, 600))
@@ -100,11 +109,12 @@ module.exports = async (req, res) => {
         title: p.title || `Part ${i + 1}`,
         content: p.content || `Auto-composed: ${p.title || 'part'}`
       }))
-      return res.json(composed)
+      return res.status(200).json(composed)
     }
 
     // Not found
-    return res.status(404).json({ error: 'Not found' })
+    console.log('Route not found:', method, pathname)
+    return res.status(404).json({ error: 'Not found', path: pathname, method })
   } catch (error) {
     console.error('API error:', error)
     return res.status(500).json({ error: error.message })
