@@ -16,11 +16,25 @@ export default function App(){
   useEffect(()=>{
     async function load(){
       setLoading(true)
-      const res = await fetch(`${API}/api/contracts`)
-      const data = await res.json()
-      setContracts(data || [])
-      setSelected((data||[])[0]||null)
-      setLoading(false)
+      try {
+        const res = await fetch(`${API}/api/contracts`)
+        if (!res.ok) {
+          console.error('API fetch failed:', res.status, res.statusText)
+          setContracts([])
+          setSelected(null)
+          setLoading(false)
+          return
+        }
+        const data = await res.json()
+        setContracts(data || [])
+        setSelected((data||[])[0]||null)
+      } catch(err) {
+        console.error('Failed to load contracts:', err)
+        setContracts([])
+        setSelected(null)
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   },[])

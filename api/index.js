@@ -1,9 +1,4 @@
-const express = require('express')
-const fs = require('fs')
-const path = require('path')
-
-// In Vercel, we need to handle file storage differently
-// For now, we'll use an in-memory store (resets on each cold start)
+// In-memory database (resets on cold starts)
 let db = {
   contracts: [],
   parts: [
@@ -13,86 +8,105 @@ let db = {
   ]
 }
 
-const app = express()
-app.use(express.json())
+// Vercel serverless function handler
+module.exports = async (req, res) => {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-// CORS headers
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Content-Type')
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200)
+    return res.status(200).end()
   }
-  next()
-})
 
-app.get('/api/parts', (req, res) => {
-  res.json(db.parts || [])
-})
+  const { url, method } = req
+  const pathname = url.replace(/^\/api/, '')
 
-app.post('/api/parts', (req, res) => {
-  db.parts = db.parts || []
-  const p = req.body
-  if (!p.id) p.id = Date.now().toString()
-  db.parts.unshift(p)
-  res.json(p)
-})
+  try {
+    // GET /api/parts
+    if (method === 'GET' && pathname === '/parts') {
+      return res.json(db.parts || [])
+    }
 
-app.delete('/api/parts/:id', (req, res) => {
-  const id = req.params.id
-  db.parts = (db.parts || []).filter(p => p.id !== id)
-  res.json({ ok: true })
-})
+    // POST /api/parts
+    if (method === 'POST' && pathname === '/parts') {
+      const p = req.body
+      if (!p.id) p.id = Date.now().toString()
+      db.parts = db.parts || []
+      db.parts.unshift(p)
+      return res.json(p)
+    }
 
-app.delete('/api/contracts/:id', (req, res) => {
-  const id = req.params.id
-  db.contracts = (db.contracts || []).filter(c => c.id !== id)
-  res.json({ ok: true })
-})
+    // DELETE /api/parts/:id
+    if (method === 'DELETE' && pathname.startsWith('/parts/')) {
+      const id = pathname.split('/')[2]
+      db.parts = (db.parts || []).filter(p => p.id !== id)
+      return res.json({ ok: true })
+    }
 
-app.get('/api/contracts', (req, res) => {
-  res.json(db.contracts || [])
-})
+    // GET /api/contracts
+    if (method === 'GET' && pathname === '/contracts') {
+      return res.json(db.contracts || [])
+    }
 
-app.post('/api/contracts', (req, res) => {
-  const c = req.body
-  db.contracts = db.contracts || []
-  db.contracts.unshift(c)
-  res.json(c)
-})
+    // POST /api/contracts
+    if (method === 'POST' && pathname === '/contracts') {
+      const c = req.body
+      db.contracts = db.contracts || []
+      db.contracts.unshift(c)
+      return res.json(c)
+    }
 
-app.put('/api/contracts/:id', (req, res) => {
-  const id = req.params.id
-  db.contracts = db.contracts || []
-  db.contracts = db.contracts.map(c => c.id === id ? req.body : c)
-  res.json(req.body)
-})
+    // PUT /api/contracts/:id
+    if (method === 'PUT' && pathname.startsWith('/contracts/') && !pathname.includes('/parts')) {
+      const id = pathname.split('/')[2]
+      db.contracts = db.contracts || []
+      db.contracts = db.contracts.map(c => c.id === id ? req.body : c)
+      return res.json(req.body)
+    }
 
-app.post('/api/contracts/:id/parts', (req, res) => {
-  const id = req.params.id
-  const { part } = req.body
-  db.contracts = db.contracts || []
-  db.contracts = db.contracts.map(c => c.id === id ? { ...c, parts: [...(c.parts || []), part] } : c)
-  res.json({ ok: true })
-})
+    // DELETE /api/contracts/:id
+    if (method === 'DELETE' && pathname.startsWith('/contracts/')) {
+      const id = pathname.split('/')[2]
+      db.contracts = (db.contracts || []).filter(c => c.id !== id)
+      return res.json({ ok: true })
+    }
 
-app.post('/api/ai/generate', async (req, res) => {
-  const { title, purpose } = req.body || {}
-  await new Promise(r => setTimeout(r, 700))
-  const result = {
-    title: title || `AI Generated Section`,
-    content: `Generated section for ${title || purpose || 'agreement'}:\n\nThis is a mock AI-generated draft. Please review and edit.`
+    // POST /api/contracts/:id/parts
+    if (method === 'POST' && pathname.match(/\/contracts\/[^/]+\/parts$/)) {
+      const id = pathname.split('/')[2]
+      const { part } = req.body
+      db.contracts = db.contracts || []
+      db.contracts = db.contracts.map(c => c.id === id ? { ...c, parts: [...(c.parts || []), part] } : c)
+      return res.json({ ok: true })
+    }
+
+    // POST /api/ai/generate
+    if (method === 'POST' && pathname === '/ai/generate') {
+      const { title, purpose } = req.body || {}
+      await new Promise(r => setTimeout(r, 700))
+      return res.json({
+        title: title || 'AI Generated Section',
+        content: `Generated section for ${title || purpose || 'agreement'}:\n\nThis is a mock AI-generated draft. Please review and edit.`
+      })
+    }
+
+    // POST /api/ai/compose
+    if (method === 'POST' && pathname === '/ai/compose') {
+      const { parts } = req.body || {}
+      await new Promise(r => setTimeout(r, 600))
+      const composed = (parts || []).map((p, i) => ({
+        id: `${Date.now()}-${i}`,
+        title: p.title || `Part ${i + 1}`,
+        content: p.content || `Auto-composed: ${p.title || 'part'}`
+      }))
+      return res.json(composed)
+    }
+
+    // Not found
+    return res.status(404).json({ error: 'Not found' })
+  } catch (error) {
+    console.error('API error:', error)
+    return res.status(500).json({ error: error.message })
   }
-  res.json(result)
-})
-
-app.post('/api/ai/compose', async (req, res) => {
-  const { parts } = req.body || {}
-  await new Promise(r => setTimeout(r, 600))
-  const composed = (parts || []).map((p, i) => ({ id: `${Date.now()}-${i}`, title: p.title || `Part ${i + 1}`, content: p.content || `Auto-composed: ${p.title || 'part'}` }))
-  res.json(composed)
-})
-
-// Export for Vercel serverless
-module.exports = app
+}
